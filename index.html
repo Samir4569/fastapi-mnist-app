@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNIST Digit Predictor</title>
+    
+</head>
+<body>
+    <p>Upload an image of a handwritten digit to get a prediction</p>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="predict()">Predict</button>
+
+    <div id="prediction"></div>
+
+    <script>
+        async function predict() {
+            const fileInput = document.getElementById('fileInput');
+            const predictionDiv = document.getElementById('prediction');
+
+            if (fileInput.files.length === 0) {
+                alert("Please upload an image.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch("http://localhost:8000/predict-image/", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                predictionDiv.textContent = `Prediction: ${data.prediction}`;
+            } catch (error) {
+                predictionDiv.textContent = "Error predicting image.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
